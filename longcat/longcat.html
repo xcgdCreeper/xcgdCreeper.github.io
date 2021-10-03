@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LoooooongCat!</title>
+</head>
+
+<body>
+    <div>
+        <!--游戏地图-->
+        <table id="map" cellspacing="0">
+        </table>
+        <p>按"空格"开始/暂停</p>
+        <p>press "space" to start/stop</p>
+        <p id="score"></p>
+        <p id="text" style="color:red"></p>
+        <audio></audio>
+    </div>
+    <script>
+        //位置类
+        class pos {
+            x;
+            y;
+        }
+        var allt;
+        //食物
+        var food = new pos;
+
+        var cat = new Array();
+        //得分
+        var score = 0;
+        //游戏状态
+        var gameover = false;
+        var pause = true;
+        //移动状态: 上、下、左、右
+        var status = 'right';
+        //地图大小
+        var rowCount = 10, colCount = 10;
+        //键盘事件
+        window.onload = function () {
+            var keynum;
+            window.onkeydown = function (e) {
+                keynum = e.keyCode;
+                console.log(e.keyCode);
+            };
+            /*
+            function start() {
+                createMap();
+                createCat();
+                exceed = setInterval(createFood, 1000);
+                draw();
+            }
+            */
+            //初始化游戏
+            createMap();
+            createCat();
+            createFood();
+            draw();
+            allt = setInterval(function () {
+                //游戏开始
+                if (keynum == 32 && pause == false) {
+                    pause = true;
+                    keynum=0;
+                }
+                //游戏暂停
+                else if (keynum == 32 && pause == true) {
+                    pause = false;
+                    keynum=0;
+                }
+                //重玩游戏
+                if(keynum==82){
+                    location.reload();
+                }
+                if (pause == false) {
+                    catMove();
+                    draw();
+                }
+
+                //console.log("living!");
+                //return 0;
+            }, 500);
+
+            //创建猫猫
+            function createCat() {
+                var part;
+                //猫猫初始位置,i为猫猫初始长度
+                var x = 4;
+                var y = 3;
+                for (var i = 0; i < 3; i++) {
+                    part = new pos;
+                    part.x = x;
+                    part.y = y;
+                    cat.unshift(part);
+                    y++;
+                }
+                console.log(cat);
+            }
+
+            //猫猫移动
+            function catMove() {
+                //上
+                if (keynum == 87 || keynum == 38) {
+                    status = 'up';
+                }
+                //下
+                else if (keynum == 83 || keynum == 40) {
+                    status = 'down';
+                }
+                //左
+                else if (keynum == 65 || keynum == 37) {
+                    status = 'left';
+                }
+                //右
+                else if (keynum == 68 || keynum == 39) {
+                    status = 'right';
+                }
+                var part = new pos;
+                switch (status) {
+                    case 'up':
+                        part.x = cat[0].x - 1;
+                        part.y = cat[0].y;
+                        break;
+                    case 'down':
+                        part.x = cat[0].x + 1;
+                        part.y = cat[0].y;
+                        break;
+                    case 'left':
+                        part.x = cat[0].x;
+                        part.y = cat[0].y - 1;
+                        break;
+                    case 'right':
+                        part.x = cat[0].x;
+                        part.y = cat[0].y + 1;
+                        break;
+                }
+                cat.unshift(part);
+                //吃到食物的情况
+                if (cat[0].x == food.x && cat[0].y == food.y) {
+                    score++;
+                    createFood();
+                }
+                else {
+                    //尾巴向前
+                    cat.pop();
+                }
+                check();
+                return 0;
+            }
+
+            //创建地图
+            function createMap() {
+                var map = document.getElementById("map");
+                var row;
+                var col;
+                for (var i = 0; i < rowCount; i++) {
+                    row = document.createElement("tr");
+                    for (var j = 0; j < colCount; j++) {
+                        col = document.createElement("td");
+                        col.setAttribute("id", "x" + i + "y" + j);
+                        row.appendChild(col);
+                    }
+                    map.appendChild(row);
+                }
+                //createFood();
+            }
+
+            //生成食物
+            function createFood() {
+                //是否和猫重合
+                var flag = true;
+                while (flag) {
+                    flag = false;
+                    food.x = Math.floor(Math.random() * rowCount);
+                    food.y = Math.floor(Math.random() * colCount);
+                    for (var i = 0; i < cat.length; i++) {
+                        if (food.x == cat[i].x && food.y == cat[i].y) {
+                            flag = true;
+                        }
+                    }
+                }
+
+            }
+
+            //检查游戏是否结束
+            function check() {
+                for (var i = 0; i < cat.length; i++) {
+                    //是否撞到边界
+                    if (cat[i].x == rowCount || cat[i].x < 0 || cat[i].y == colCount || cat[i].y < 0) {
+
+                        endGame();
+
+                        return;
+                    }
+                    for (var j = i + 1; j < cat.length; j++) {
+                        //是否撞到自己
+                        if (cat[i].x == cat[j].x && cat[i].y == cat[j].y) {
+                            endGame();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            //结束游戏
+            function endGame() {
+                gameover = true;
+                document.getElementById("text").innerText = "loser~~~";
+                clearInterval(allt);
+            }
+            //暂停游戏
+            function pauseGame() {
+                document.getElementById("text").innerText = "PAUSE";
+                clearInterval(allt);
+            }
+            //绘制图形
+            function draw() {
+                if (gameover == true) {
+                    return;
+                }
+                var node;
+                //刷新地图
+                for (var i = 0; i < rowCount; i++) {
+                    for (var j = 0; j < colCount; j++) {
+                        node = document.getElementById("x" + i + "y" + j);
+                        node.setAttribute("class", "");
+                    }
+                }
+                var scoreNode=document.getElementById("score").innerText="YOUR SCORE: "+score;
+                //绘制食物
+                var foodNode = document.getElementById("x" + food.x + "y" + food.y);
+                foodNode.setAttribute("class", "food");
+                //绘制猫猫
+                var catNode;
+                for (var i = 1; i < cat.length - 1; i++) {
+                    //猫猫身体
+                    catNode = document.getElementById("x" + cat[i].x + "y" + cat[i].y);
+                    if (cat[i - 1].x == cat[i].x && cat[i].x == cat[i + 1].x && (Math.abs(cat[i - 1].y - cat[i].y) == 1 || Math.abs(cat[i].y - cat[i + 1].y) == 1)) {
+                        catNode.setAttribute("class", "cat-body-right");
+                    }
+                    else if ((cat[i].x + 1 == cat[i - 1].x || cat[i].x + 1 == cat[i + 1].x) && (cat[i].y + 1 == cat[i + 1].y || cat[i].y + 1 == cat[i - 1].y)) {
+                        catNode.setAttribute("class", "cat-body-bend1");
+                    }
+                    else if ((cat[i].x - 1 == cat[i - 1].x || cat[i].x - 1 == cat[i + 1].x) && (cat[i].y + 1 == cat[i + 1].y || cat[i].y + 1 == cat[i - 1].y)) {
+                        catNode.setAttribute("class", "cat-body-bend4");
+                    }
+                    else if ((cat[i].x - 1 == cat[i - 1].x || cat[i].x - 1 == cat[i + 1].x) && (cat[i].y - 1 == cat[i + 1].y || cat[i].y - 1 == cat[i - 1].y)) {
+                        catNode.setAttribute("class", "cat-body-bend3");
+                    }
+                    else if ((cat[i].x + 1 == cat[i - 1].x || cat[i].x + 1 == cat[i + 1].x) && (cat[i].y - 1 == cat[i + 1].y || cat[i].y - 1 == cat[i - 1].y)) {
+                        catNode.setAttribute("class", "cat-body-bend2");
+                    }
+                    else {
+                        catNode.setAttribute("class", "cat-body");
+                    }
+
+                }
+                //猫猫头
+                catNode = document.getElementById("x" + cat[0].x + "y" + cat[0].y);
+                if (cat[0].y > cat[1].y) {
+                    catNode.setAttribute("class", "cat-head-right");
+                }
+                else if (cat[0].y < cat[1].y) {
+                    catNode.setAttribute("class", "cat-head-left");
+                }
+                else if (cat[0].x < cat[1].x) {
+                    catNode.setAttribute("class", "cat-head");
+                }
+                else if (cat[0].x > cat[1].x) {
+                    catNode.setAttribute("class", "cat-head-down");
+                }
+                //猫猫jo
+                catNode = document.getElementById("x" + cat[cat.length - 1].x + "y" + cat[cat.length - 1].y);
+                if (cat[cat.length - 1].y < cat[cat.length - 2].y) {
+                    catNode.setAttribute("class", "cat-foot-right");
+                }
+                else if (cat[cat.length - 1].y > cat[cat.length - 2].y) {
+                    catNode.setAttribute("class", "cat-foot-left");
+                }
+                else if (cat[cat.length - 1].x > cat[cat.length - 2].x) {
+                    catNode.setAttribute("class", "cat-foot");
+                }
+                else if (cat[cat.length - 1].x < cat[cat.length - 2].x) {
+                    catNode.setAttribute("class", "cat-foot-down");
+                }
+
+                return 0;
+            }
+        }
+
+    </script>
+    <style>
+        #map {
+            border-style: solid;
+            background-size: auto 100%;
+            background-image: url('./bg.jpg');
+        }
+
+        #map td {
+            width: 30px;
+            height: 30px;
+            border-width: 1px;
+        }
+
+        .food {
+            background-size: 100% auto;
+            background-image: url('./neil.png');
+        }
+
+        .cat-head {
+            background-size: 100% auto;
+            background-image: url('./head.png');
+        }
+
+        .cat-head-right {
+            background-size: 100% auto;
+            background-image: url('./head.png');
+            transform: rotate(90deg);
+        }
+
+        .cat-head-down {
+            background-size: 100% auto;
+            background-image: url('./head.png');
+            transform: rotate(180deg);
+        }
+
+        .cat-head-left {
+            background-size: 100% auto;
+            background-image: url('./head.png');
+            transform: rotate(270deg);
+        }
+
+        .cat-body {
+            background-size: 100% auto;
+            background-image: url('./body.png');
+        }
+
+        .cat-body-right {
+            background-size: 100% auto;
+            background-image: url('./body.png');
+            transform: rotate(90deg);
+        }
+
+        .cat-foot {
+            background-size: 100% auto;
+            background-image: url('./foot.png');
+        }
+
+        .cat-foot-right {
+            background-size: 100% auto;
+            background-image: url('./foot.png');
+            transform: rotate(90deg);
+        }
+
+        .cat-foot-down {
+            background-size: 100% auto;
+            background-image: url('./foot.png');
+            transform: rotate(180deg);
+        }
+
+        .cat-foot-left {
+            background-size: 100% auto;
+            background-image: url('./foot.png');
+            transform: rotate(270deg);
+        }
+
+        .cat-body-bend1 {
+            background-size: 100% auto;
+            background-image: url('./bend.png');
+        }
+
+        .cat-body-bend2 {
+            background-size: 100% auto;
+            background-image: url('./bend.png');
+            transform: rotate(90deg);
+        }
+
+        .cat-body-bend3 {
+            background-size: 100% auto;
+            background-image: url('./bend.png');
+            transform: rotate(180deg);
+        }
+
+        .cat-body-bend4 {
+            background-size: 100% auto;
+            background-image: url('./bend.png');
+            transform: rotate(270deg);
+        }
+    </style>
+</body>
+
+</html>
