@@ -10,11 +10,26 @@
         <!--游戏地图-->
         <table id="map" cellspacing="0">
         </table>
-        <p>按"空格"开始/暂停</p>
-        <p>press "space" to start/stop</p>
+        <p>按"空格"开始/暂停&nbsp;"WASD"控制方向</p>
+        <p>press "space" to start/stop&nbsp;"WASD" to control directions</p>
         <p id="score"></p>
         <p id="text" style="color:red"></p>
         <audio></audio>
+        <div id="virtual-keys">
+            <table>
+                <tr>
+                    <td><button onclick="keynum=65">LEFT</button></td>
+                    <td>
+                        <table>
+                        <tr><td><button onclick="keynum=87">UP</button></td></tr>
+                        <tr><td><button onclick="keynum=83">DOWN</button></td></tr>
+                        </table>
+                    </td>
+                    <td><button onclick="keynum=68">RIGHT</button></td>
+                    <td><button onclick="keynum=32">SPACE</button></td><td><button onclick="location.reload();">RESTART</button></td>
+                </tr>
+            </table>
+        </div>
     </div>
     <script>
         //位置类
@@ -25,7 +40,7 @@
         var allt;
         //食物
         var food = new pos;
-
+        //猫猫本体
         var cat = new Array();
         //得分
         var score = 0;
@@ -36,9 +51,12 @@
         var status = 'right';
         //地图大小
         var rowCount = 10, colCount = 10;
-        //键盘事件
+        //键盘值
+        var keynum;
+        //游戏速度
+        var speed=500;
         window.onload = function () {
-            var keynum;
+            //键盘事件
             window.onkeydown = function (e) {
                 keynum = e.keyCode;
                 console.log(e.keyCode);
@@ -78,8 +96,10 @@
 
                 //console.log("living!");
                 //return 0;
-            }, 500);
-
+            }, speed);
+            function setKey(num){
+                keynum=num;
+            }
             //创建猫猫
             function createCat() {
                 var part;
@@ -289,6 +309,13 @@
 
     </script>
     <style>
+        #virtual-keys{
+            text-align: center;
+        }
+        #virtual-keys button{
+            width: 5em;
+            height: 5em;
+        }
         #map {
             border-style: solid;
             background-size: auto 100%;
