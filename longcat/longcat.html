@@ -7,29 +7,59 @@
 
 <body>
     <div>
-        <!--游戏地图-->
-        <table id="map" cellspacing="0">
-        </table>
-        <p>按"空格"开始/暂停&nbsp;"WASD"控制方向</p>
-        <p>press "space" to start/stop&nbsp;"WASD" to control directions</p>
-        <p id="score"></p>
-        <p id="text" style="color:red"></p>
-        <audio></audio>
-        <div id="virtual-keys">
-            <table>
-                <tr>
-                    <td><button onclick="keynum=65">LEFT</button></td>
-                    <td>
+        <table>
+            <tr>
+                <td>
+                    <!--游戏地图-->
+                    <table id="map" cellspacing="0">
+                    </table>
+                    <div id="virtual-keys">
                         <table>
-                        <tr><td><button onclick="keynum=87">UP</button></td></tr>
-                        <tr><td><button onclick="keynum=83">DOWN</button></td></tr>
+                            <tr>
+                                <td><button onclick="keynum=65" class="directions">LEFT</button></td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td><button onclick="keynum=87" class="directions">UP</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td><button onclick="keynum=83" class="directions">DOWN</button></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td><button onclick="keynum=68" class="directions">RIGHT</button></td>
+
+                            </tr>
                         </table>
-                    </td>
-                    <td><button onclick="keynum=68">RIGHT</button></td>
-                    <td><button onclick="keynum=32">SPACE</button></td><td><button onclick="location.reload();">RESTART</button></td>
-                </tr>
-            </table>
-        </div>
+                        <table style="margin-top: 1em;">
+                            <tr>
+                                <td><button onclick="keynum=84" class="space">START/STOP</button></td>
+                                <td><button onclick="keynum=82">RESTART</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <p>按"T"开始/暂停，&nbsp;"WASD"控制方向</p>
+                        <p>press "T" to start/stop,&nbsp;"WASD" to control directions</p>
+                        <button onclick="if(sound==false)sound=true;else sound=false" hidefocus="true">sound</button>
+                        <p id="soundStatus">Sound: off</p>
+                        <p id="score"></p>
+                        <p id="text" style="color:red"></p>
+                        <audio src="./cat/cat_meow-mouthy.ogg" id="sound"></audio>
+                        <audio src="./cat/cat annoyed 1.ogg" id="eat"></audio>
+                        <audio src="./bgm.mp3" loop id="music"></audio>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
+
+
+
     </div>
     <script>
         //位置类
@@ -54,7 +84,11 @@
         //键盘值
         var keynum;
         //游戏速度
-        var speed=500;
+        var speed = 250;
+        //
+        var eat=false;
+        var music = false;
+        var sound = false;
         window.onload = function () {
             //键盘事件
             window.onkeydown = function (e) {
@@ -70,35 +104,34 @@
             }
             */
             //初始化游戏
-            createMap();
-            createCat();
-            createFood();
-            draw();
+            initGame();
             allt = setInterval(function () {
+                if (gameover == false)
+                    soundControl();
                 //游戏开始
-                if (keynum == 32 && pause == false) {
+                if (keynum == 84 && pause == false) {
                     pause = true;
-                    keynum=0;
+                    keynum = 0;
                 }
                 //游戏暂停
-                else if (keynum == 32 && pause == true) {
+                else if (keynum == 84 && pause == true) {
                     pause = false;
-                    keynum=0;
+                    keynum = 0;
                 }
                 //重玩游戏
-                if(keynum==82){
-                    location.reload();
+                if (keynum == 82) {
+                    gameover = false;
+                    keynum = 0;
+                    initGame();
+                    //location.reload();
                 }
-                if (pause == false) {
+                if (pause == false && gameover == false) {
                     catMove();
                     draw();
                 }
-
-                //console.log("living!");
-                //return 0;
             }, speed);
-            function setKey(num){
-                keynum=num;
+            function setKey(num) {
+                keynum = num;
             }
             //创建猫猫
             function createCat() {
@@ -115,24 +148,41 @@
                 }
                 console.log(cat);
             }
-
+            //初始化游戏
+            function initGame() {
+                pause=true;
+                score=0;
+                var map=document.getElementById("map");
+                map.innerHTML="";
+                cat.splice(0,cat.length);
+                status='right';
+                document.getElementById("text").innerText="";
+                createMap();
+                createCat();
+                createFood();
+                draw();
+            }
             //猫猫移动
             function catMove() {
                 //上
                 if (keynum == 87 || keynum == 38) {
-                    status = 'up';
+                    if (status != 'down')
+                        status = 'up';
                 }
                 //下
                 else if (keynum == 83 || keynum == 40) {
-                    status = 'down';
+                    if (status != 'up')
+                        status = 'down';
                 }
                 //左
                 else if (keynum == 65 || keynum == 37) {
-                    status = 'left';
+                    if (status != 'right')
+                        status = 'left';
                 }
                 //右
                 else if (keynum == 68 || keynum == 39) {
-                    status = 'right';
+                    if (status != 'left')
+                        status = 'right';
                 }
                 var part = new pos;
                 switch (status) {
@@ -157,6 +207,7 @@
                 //吃到食物的情况
                 if (cat[0].x == food.x && cat[0].y == food.y) {
                     score++;
+                    eat=true;
                     createFood();
                 }
                 else {
@@ -206,9 +257,7 @@
                 for (var i = 0; i < cat.length; i++) {
                     //是否撞到边界
                     if (cat[i].x == rowCount || cat[i].x < 0 || cat[i].y == colCount || cat[i].y < 0) {
-
                         endGame();
-
                         return;
                     }
                     for (var j = i + 1; j < cat.length; j++) {
@@ -225,17 +274,38 @@
             function endGame() {
                 gameover = true;
                 document.getElementById("text").innerText = "loser~~~";
-                clearInterval(allt);
+                //clearInterval(allt);
             }
-            //暂停游戏
-            function pauseGame() {
-                document.getElementById("text").innerText = "PAUSE";
-                clearInterval(allt);
+            //开启/关闭声音
+            function soundControl() {
+                var musicNode = document.getElementById("music");
+                var soundNode = document.getElementById("sound");
+                var eatNode=document.getElementById("eat");
+                if (sound == true) {
+                    musicNode.play();
+                    document.getElementById("soundStatus").innerText = "Sounds: on";
+                }
+                else {
+                    musicNode.pause();
+                    document.getElementById("soundStatus").innerText = "Sounds: off";
+                }
+                if (gameover == true && sound==true) {
+                    soundNode.play();
+                    musicNode.pause();
+                }
+                if(eat==true&&sound==true){
+                    eatNode.play();
+                }
             }
             //绘制图形
             function draw() {
                 if (gameover == true) {
+                    soundControl();
                     return;
+                }
+                if(eat==true){
+                    soundControl();
+                    eat=false;
                 }
                 var node;
                 //刷新地图
@@ -245,7 +315,7 @@
                         node.setAttribute("class", "");
                     }
                 }
-                var scoreNode=document.getElementById("score").innerText="YOUR SCORE: "+score;
+                var scoreNode = document.getElementById("score").innerText = "YOUR SCORE: " + score;
                 //绘制食物
                 var foodNode = document.getElementById("x" + food.x + "y" + food.y);
                 foodNode.setAttribute("class", "food");
@@ -272,7 +342,6 @@
                     else {
                         catNode.setAttribute("class", "cat-body");
                     }
-
                 }
                 //猫猫头
                 catNode = document.getElementById("x" + cat[0].x + "y" + cat[0].y);
@@ -302,20 +371,26 @@
                 else if (cat[cat.length - 1].x < cat[cat.length - 2].x) {
                     catNode.setAttribute("class", "cat-foot-down");
                 }
-
-                return 0;
             }
         }
 
     </script>
     <style>
-        #virtual-keys{
+        #virtual-keys {
             text-align: center;
         }
-        #virtual-keys button{
+
+        .directions {
             width: 5em;
             height: 5em;
         }
+
+        .space {
+            width: 15em;
+            height: 3em;
+            margin-right: 3em;
+        }
+
         #map {
             border-style: solid;
             background-size: auto 100%;
@@ -323,8 +398,8 @@
         }
 
         #map td {
-            width: 30px;
-            height: 30px;
+            width: 2em;
+            height: 2em;
             border-width: 1px;
         }
 
