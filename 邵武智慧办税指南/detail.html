@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>智慧办税</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta charset="utf-8">
+    <script src="./jquery-3.5.1.js"></script>
+    <script src="./file/menu.js"></script>
+    <style>
+        body {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            
+        }
+        .context{
+            padding-right: 1em;
+        }
+        ul {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            padding: 0;
+            margin: 0;
+            float: left;
+            width: 50vw;
+            height: 40vw;
+            border-style: solid;
+            list-style: none;
+            text-align: center;
+            line-height: 40vw;
+
+        }
+        .head{
+            background-color: #366bff;
+            color: white;
+        }
+        .title {
+            text-align: center;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            margin: 0;
+            font-weight: bold;
+        }
+        .ret{
+            color: white;
+            position: absolute;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            padding-left: 1em;
+            margin: 0;
+        }
+        h2{
+            text-align: center;
+        }
+        p{
+            padding-left: 1em;
+        }
+        h3{
+            padding-left: 1em;
+        }
+        iframe{
+            width: 100vw;
+            height: 100vh;
+        }
+        img{
+            width: 100vw;
+        }
+    </style>
+    <script>
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+        $(document).ready(function () {
+            var id=getUrlParam("id"); 
+            var id2=getUrlParam("id2"); 
+            $(".title").append(menu[id].list[id2].name);
+            var context=menu[id].list[id2].context;
+            $(".context").append("<img src='"+menu[id].list[id2].context.url+"'/>");
+            
+            /*
+            if(menu[id].list[id2].context.blqd!=null){
+                $(".context").append("<h2>办理渠道</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.blqd + "</p>");
+            }
+            if(menu[id].list[id2].context.sxcl!=null){
+                $(".context").append("<h2>所需材料</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.sxcl + "</p>");
+            }
+            if(menu[id].list[id2].context.zysx!=null){
+                $(".context").append("<h2>注意事项</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.zysx + "</p>");
+            }
+            if(menu[id].list[id2].context.czgf!=null){
+                $(".context").append("<h2>操作规范</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.czgf + "</p>");
+            }
+            if(menu[id].list[id2].context.bllc!=null){
+                $(".context").append("<h2>办理流程</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.bllc + "</p>");
+            }
+            if(menu[id].list[id2].context.dzswjczlc!=null){
+                $(".context").append("<h2>电子税务局操作流程</h2>");
+                $(".context").append("<p>" + menu[id].list[id2].context.dzswjczlc + "</p>");
+            }
+            $(".context").append("<h2>办理渠道</h2>");
+            $(".context").append("<p>" + menu[id].list[id2].context.blqd + "</p>");
+            $(".context").append("<hr>");
+            $(".context").append("<h2>窗口办理流程</h2>");
+            $(".context").append("<p>" + menu[id].list[id2].context.bllc + "</p>");
+            $(".context").append("<hr>");
+            $(".context").append("<h2>所需材料</h2>");
+            $(".context").append("<p>" + menu[id].list[id2].context.sxcl + "</p>");
+            $(".context").append("<hr>");
+            $(".context").append("<h2>电子税务局操作流程</h2>");
+            $(".context").append("<h3>旧电子税务局</h3>");
+            $(".context").append("<p>" + menu[id].list[id2].context.jdzswj + "</p>");
+            $(".context").append("<hr>");
+            $(".context").append("<h3>新电子税务局</h3>");
+            $(".context").append("<p>" + menu[id].list[id2].context.xdzswj + "</p>");
+            */
+        });
+
+    </script>
+</head>
+
+<body>
+    <p onclick="history.go(-1)" class="ret">返回</p>
+    <div class="head"><p class="title"></p></div>
+    <div class="context"></div>
+</body>
+
+</html>

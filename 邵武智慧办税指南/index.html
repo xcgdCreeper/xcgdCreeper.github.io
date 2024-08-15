@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>智慧办税</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta charset="utf-8">
+    <script src="./jquery-3.5.1.js"></script>
+    <script src="./file/menu.js"></script>
+    <style>
+        body {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+
+        ul {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .item {
+            padding-top: 10vw;
+            margin: 0;
+            margin-left: 1vw;
+            margin-right: 1vw;
+            margin-top: 1vw;
+            margin-bottom: 1vw;
+            padding-left: 0;
+            padding-right: 0;
+            width: 47vw;
+            height: 38vw;
+            list-style: none;
+            text-align: center;
+            vertical-align: middle;
+            float: left;
+            border-radius: 1.5em;
+            background-color: white;
+            box-shadow: 0.3em 0.3em 0.3em rgb(221, 221, 221)
+        }
+        .head{
+            background-color: #366bff;
+            color: white;
+            margin-bottom: 1em;
+        }
+        .title {
+            text-align: center;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            margin: 0;
+            font-weight: bold;
+        }
+        img{
+            width: 15vw;
+            height: 15vw;
+            padding: 2.5vw;
+        }
+        .ret{
+            color: white;
+            position: absolute;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            padding-left: 1em;
+            margin: 0;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <p onclick="history.go(-1)" class="ret">返回</p>
+    <div class="head"><p class="title">请选择业务类型</p></div>
+    <ul class="list">
+        
+    </ul>
+    <script>
+        $(document).ready(function () {
+            $.each(menu, function (i, val) {
+                $(".list").append("<li class='item' id=" + val.id + "><img src='./icon/文库配置.svg'><div>" + val.name + "</div></li>");
+            });
+            $(".item").click(function (event) {
+                if(event.target.tagName!="LI"){
+                    console.log(event.target.parentElement);
+                    window.location.href="menu.html?id="+event.target.parentElement.id;
+                }
+                else{
+                    console.log(event.target);
+                    window.location.href="menu.html?id="+event.target.id;
+                }
+                //window.location.href="menu.html?id="+event.target.id;
+            });
+            //$(".list").append("<li class='item'></li>")
+        });
+
+    </script>
+</body>
+
+</html>
